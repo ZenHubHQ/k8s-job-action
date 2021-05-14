@@ -74,8 +74,11 @@ runs:
                 - name: ${{ inputs.name }}
                   image: ${{ inputs.image }}
                   imagePullPolicy: Always
+                  tty: true
                   command: ${{ inputs.command }}
                   env:
+                      - name: "TERM"
+                        value: "xterm-256color"
         EOF
 
         for e in $(printenv); do
