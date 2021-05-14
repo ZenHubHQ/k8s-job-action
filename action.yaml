@@ -74,6 +74,7 @@ runs:
                 - name: ${{ inputs.name }}
                   image: ${{ inputs.image }}
                   imagePullPolicy: Always
+                  tty:true
                   command: ${{ inputs.command }}
                   env:
         EOF
