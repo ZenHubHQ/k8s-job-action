@@ -79,6 +79,8 @@ runs:
                   env:
                       - name: "TERM"
                         value: "xterm-256color"
+                      - name: "CI"
+                        value: "true"
         EOF
 
         for e in $(printenv); do
