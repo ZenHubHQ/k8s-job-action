@@ -104,6 +104,7 @@ runs:
     - name: "Handle Job"
       shell: bash
       run: |
+        set -x
         jobName=${{ inputs.name }}
         namespace=${{ inputs.namespace }}
 
