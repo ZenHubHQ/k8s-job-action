@@ -156,6 +156,11 @@ runs:
         else
           echo "     Job final state is not 'complete', it ended with failures"
           echo "     Namespace ${{ inputs.namespace }} will not be deleted to allow debugging"
+          echo "     DEBUG: Attempting to get as much info as possible before exiting 1"
+          set +x
+          kubectl -n ${namespace} logs --tail=0 job/${jobName}  || true
+          kubectl -n ${namespace} describe job/${jobName}  || true
+          kubectl -n ${namespace} describe pod -l "job-name=${jobName}" || true
           exit 1
         fi
 
