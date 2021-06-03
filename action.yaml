@@ -32,6 +32,10 @@ inputs:
     description: 'how long to wait for pulling image and starting container, does not apply once the container is running. Use action timeout_minute to timeout the overall Job run'
     required: false
     default: "5"
+  backoffLimit:
+    description: 'how many times to retry running the Job'
+    required: false
+    default: "1"
 runs:
   using: "composite"
   steps:
@@ -64,7 +68,7 @@ runs:
           name: ${{ inputs.name }}
           namespace: ${{ inputs.namespace }}
         spec:
-          backoffLimit: 1
+          backoffLimit: ${{ inputs.backoffLimit }}
           completions: 1
           parallelism: 1
           template:
