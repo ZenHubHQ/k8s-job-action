@@ -46,12 +46,12 @@ runs:
         echo "createNamespace: ${{ inputs.createNamespace }}"
         echo "deleteNamespace: ${{ inputs.cleanNamespace }}"
 
+
     - name: "Enable eslint problem matchers"
       shell: bash
       run: |
         ls -la
-        echo "::add-matcher::.github/eslint-compact.json"
-        echo "::add-matcher::.github/eslint-stylish.json"
+        echo "::add-matcher::${{ github.action_path }}/.github/eslint-stylish.json"
 
     - name: "Create Namespace"
       shell: bash
