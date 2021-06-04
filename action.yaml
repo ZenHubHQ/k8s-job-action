@@ -50,8 +50,10 @@ runs:
     - name: "Enable eslint problem matchers"
       shell: bash
       run: |
-        ls -la
+        echo "start enable eslint matcher "
+        ls -la ${{ github.action_path }}/.github/
         echo "::add-matcher::${{ github.action_path }}/.github/eslint-stylish.json"
+        echo "finish enable eslint matcher "
 
     - name: "Create Namespace"
       shell: bash
