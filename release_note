@@ -1,2 +1,2 @@
-v1.2 
-* enable TTY & TERM variable to allow colorized outpuf of applications
+v1.3
+* introduce support for cpu/memory requests and limits

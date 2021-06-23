@@ -41,7 +41,7 @@ inputs:
     required: true
     default: "1"
   requestsMEM:
-    description: 'how much resources request from system to run this job'
+    description: 'how much MEM resources request from system to run this job'
     required: true
     default: 1Gi
   limitCPU:
