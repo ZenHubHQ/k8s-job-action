@@ -36,6 +36,22 @@ inputs:
     description: 'how many times to retry running the Job'
     required: false
     default: "1"
+  requestsCPU:
+    description: 'how much CPU resources request from system to run this job'
+    required: true
+    default: "1"
+  requestsMEM:
+    description: 'how much MEM resources request from system to run this job'
+    required: true
+    default: 1Gi
+  limitCPU:
+    description: 'how much CPU resources this job can consume'
+    required: true
+    default: "2"
+  limitMEM:
+    description: 'how much MEM resources this job can consume'
+    required: true
+    default: 2Gi
 runs:
   using: "composite"
   steps:
@@ -79,6 +95,13 @@ runs:
                   image: ${{ inputs.image }}
                   imagePullPolicy: Always
                   tty: true
+                  resources:
+                   limits:
+                     cpu: "${{ inputs.limitCPU }}"
+                     memory: ${{ inputs.limitMEM }}
+                   requests:
+                     cpu: "${{ inputs.requestsCPU }}"
+                     memory: ${{ inputs.requestsMEM }}
                   command: ${{ inputs.command }}
                   env:
                       - name: "TERM"
