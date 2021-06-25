@@ -1,2 +1,2 @@
-v1.3
-* introduce support for cpu/memory requests and limits
+v1.4
+* use dedicated nodepool for k8s-jobs.
