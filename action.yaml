@@ -90,6 +90,13 @@ runs:
           template:
             spec:
               restartPolicy: OnFailure
+              tolerations:
+              - key: "ci-workloads-only"
+                operator: "Equal"
+                value: "true"
+                effect: "PreferNoSchedule"
+              nodeSelector:
+                reserved-for: ci-workloads
               containers:
                 - name: ${{ inputs.name }}
                   image: ${{ inputs.image }}
