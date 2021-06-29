@@ -1,0 +1,21 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: testjob
+  namespace: testjob
+spec:
+  backoffLimit: 2
+  completions: 1
+  parallelism: 1
+  template:
+    spec:
+      restartPolicy: Never
+      nodeSelector:
+        reserved-for: ci-workloads
+      containers:
+        - name: test
+          image: ubuntu
+#          command: ['bash', '-c', 'exit 1']
+#          command: ['bash', '-c', 'exit 0']
+#          command: ['bash', '-c', 'sleep 5 && echo ok && exit 0']
+          command: ['bash', '-c', 'if [[ $(( ( RANDOM % 5 )  + 1 )) == 1 ]]; then sleep 5 && echo OK && exit 0; else sleep 5 && echo KO && exit 1; fi']
