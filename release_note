@@ -1,2 +1,0 @@
-v1.4
-* use dedicated nodepool for k8s-jobs.
