@@ -148,12 +148,16 @@ runs:
         timeoutMinuteStartContainer=${{ inputs.timeoutMinuteStartContainer }}
 
         function yellAndExit1(){
+          echo -e "\033[38;5;202mK8S Debug Information:\033[0m"
+          echo -e ::group:: "[expand]"
+
           echo "     Namespace ${namespace} will not be deleted to allow debugging"
           echo "     Attempting to get as much info as possible before exiting 1"
           set -x
           kubectl -n ${namespace} get job/${jobName} -o yaml || true
           kubectl -n ${namespace} describe job/${jobName}  || true
           kubectl -n ${namespace} describe pod -l "job-name=${jobName}" || true
+          echo ::endgroup::
           exit 1
         }
 
