@@ -196,7 +196,7 @@ runs:
             echo "     Job final state is 'complete', it ended with sucess"
             exit 0
           else
-            if [[ $(kubectl -n ${namespace} get job/${jobName} -o jsonpath='{.spec.backoffLimit}') != $(kubectl -n ${namespace} get job/${jobName} -o jsonpath='{.status.failed}') ]]; then
+            if [[ $(kubectl -n ${namespace} get job/${jobName} -o jsonpath='{.spec.backoffLimit}') >= $(kubectl -n ${namespace} get job/${jobName} -o jsonpath='{.status.failed}') ]]; then
               echo "     Job replica failed, loop to wait for the next replica"
             else
               echo "     Job has reach its backoffLimit and its final state is not 'complete', it ended with failures"
