@@ -148,7 +148,7 @@ runs:
         timeoutMinuteStartContainer=${{ inputs.timeoutMinuteStartContainer }}
 
         function yellAndExit1(){
-          echo -e ::group:: "\033[172m K8S Debug Information \033[0m"
+          echo -e ::group:: "[clickable] K8S Debug Information"
 
           echo "     Namespace ${namespace} will not be deleted to allow debugging"
           echo "     Attempting to get as much info as possible before exiting 1"
