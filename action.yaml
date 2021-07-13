@@ -66,6 +66,12 @@ runs:
         echo "createNamespace: ${{ inputs.createNamespace }}"
         echo "deleteNamespace: ${{ inputs.cleanNamespace }}"
 
+    - name: "Enable Problem Matcher"
+      shell: bash
+      run: |
+        echo "::add-matcher::${{ github.action_path }}/.github/problem_matchers/eslint.json"
+        echo "::add-matcher::${{ github.action_path }}/.github/problem_matchers/stylelint.json"
+
     - name: "Create Namespace"
       shell: bash
       run: |
