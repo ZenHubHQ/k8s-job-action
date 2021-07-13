@@ -4,8 +4,8 @@
             "owner": "eslint-stylish",
             "pattern": [
                 {
-                    "regexp": "^[/]srv\/(.*)$",
-                    "file": 1
+                    "regexp": "^[/](srv|src|zenhub)\/(.*)$",
+                    "file": 2
                 },
                 {
                     "regexp": "^\\s+(\\d+):(\\d+)\\s+(error|warning|info)\\s+(.*)[ ]{2,}(.*)$",
