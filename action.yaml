@@ -99,9 +99,7 @@ runs:
               restartPolicy: Never
               tolerations:
               - key: "ci-workloads-only"
-                operator: "Equal"
-                value: "true"
-                effect: "PreferNoSchedule"
+                operator: "Exists"
               nodeSelector:
                 reserved-for: ci-workloads
               containers:
