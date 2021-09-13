@@ -146,7 +146,6 @@ runs:
         # this crancky implementation is because '--pod-running-timeout' is not working...
 
         set -e
-        set -x
         jobName=${{ inputs.name }}
         namespace=${{ inputs.namespace }}
         timeoutMinuteStartContainer=${{ inputs.timeoutMinuteStartContainer }}
