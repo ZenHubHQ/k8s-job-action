@@ -72,25 +72,6 @@ runs:
         echo "::add-matcher::${{ github.action_path }}/.github/problem_matchers/eslint.json"
         echo "::add-matcher::${{ github.action_path }}/.github/problem_matchers/stylelint.json"
 
-    - name: "Create Persistent Volume Claim"
-      shell: bash
-      run: |
-        cat <<EOF > pvc.yaml
-        apiVersion: v1
-        kind: PersistentVolumeClaim
-        metadata:
-          name: ${{ inputs.name }}
-          namespace: ${{ inputs.namespace }}
-        spec:
-          storageClassName: "wait-consumer"
-          accessModes:
-          - ReadWriteOnce
-          resources:
-            requests:
-              storage: 50M
-        EOF
-        kubectl apply -f pvc.yaml
-
     - name: "Create Namespace"
       shell: bash
       run: |
@@ -123,9 +104,15 @@ runs:
                 reserved-for: ci-workloads
               volumes:
                 - name: v1
-                  persistentVolumeClaim:
-                    claimName: ${{ inputs.name }}
+                  emptyDir: {}
               containers:
+                - name: ubuntu
+                  image: ubuntu:latest
+                  command: [ "/bin/bash", "-c", "--" ]
+                  args: [ "while true; do sleep 30; done;" ]
+                  volumeMounts:
+                    - mountPath: /job_outputs
+                      name: v1                  
                 - name: ${{ inputs.name }}
                   image: ${{ inputs.image }}
                   imagePullPolicy: Always
@@ -245,7 +232,6 @@ runs:
     - name: "Clean Resources"
       shell: bash
       run: |
-        kubectl delete pvc -n ${{ inputs.namespace }} ${{ inputs.name }} || true
         [[ "${{ inputs.deleteNamespace }}" != "true" ]] && exit 0
         echo "     Delete namespace"
         kubectl delete namespace ${{ inputs.namespace }} || true
