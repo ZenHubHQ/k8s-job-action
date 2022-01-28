@@ -119,6 +119,10 @@ runs:
                 operator: "Exists"
               nodeSelector:
                 reserved-for: ci-workloads
+              volumes:
+                - name: v1
+                  persistentVolumeClaim:
+                    claimName: ${{ inputs.namespace }}-${{ inputs.name }}
               containers:
                 - name: ${{ inputs.name }}
                   image: ${{ inputs.image }}
@@ -132,18 +136,14 @@ runs:
                      cpu: "${{ inputs.requestsCPU }}"
                      memory: ${{ inputs.requestsMEM }}
                   command: ${{ inputs.command }}
+                  volumeMounts:
+                    - mountPath: /job_outputs
+                      name: v1
                   env:
                       - name: "TERM"
                         value: "xterm-256color"
                       - name: "CI"
                         value: "true"
-                  volumeMounts:
-                    - mountPath: /job_outputs
-                      name: v1
-              volumes:
-                - name: v1
-                  persistentVolumeClaim:
-                    claimName: ${{ inputs.namespace }}-${{ inputs.name }}
         EOF
 
         for e in $(printenv); do
