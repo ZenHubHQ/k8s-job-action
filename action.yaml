@@ -83,9 +83,9 @@ runs:
         spec:
           accessModes:
           - ReadWriteMany
-            resources:
-          requests:
-            storage: 50M
+          resources:
+            requests:
+              storage: 50M
         EOF
         kubectl apply -f pvc.yaml
 
