@@ -79,7 +79,8 @@ runs:
         apiVersion: v1
         kind: PersistentVolumeClaim
         metadata:
-          name: ${{ inputs.namespace }}-${{ inputs.name }}
+          name: ${{ inputs.name }}
+          namespace: ${{ inputs.namespace }}
         spec:
           accessModes:
           - ReadWriteOnce
