@@ -82,7 +82,7 @@ runs:
           name: ${{ inputs.namespace }}-${{ inputs.name }}
         spec:
           accessModes:
-          - ReadWriteMany
+          - ReadWriteOnce
           resources:
             requests:
               storage: 50M
