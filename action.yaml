@@ -106,8 +106,8 @@ runs:
                 - name: v1
                   emptyDir: {}
               containers:
-                - name: ubuntu
-                  image: ubuntu:latest
+                - name: bash
+                  image: bash:5.0.18
                   command: [ "/bin/bash", "-c", "--" ]
                   args: [ "while true; do sleep 30; done;" ]
                   volumeMounts:
@@ -212,8 +212,14 @@ runs:
           # not elegant but the safest way to get the overall Job status as .failed and conditions start to get tricky
           # to look into as long as more than backofflimit is not 0
           # give 5s to Kubernetes to have time to update the job status
-          kubectl -n ${namespace} wait --for=condition=complete --timeout=60s job/${jobName} && complete=true || true
-          if [[ "${complete}" == "true" ]]; then
+          
+          # kubectl -n ${namespace} wait --for=condition=complete --timeout=60s job/${jobName} && complete=true || true
+        
+          terminate_status=`kubectl -n ci-kraken-26957 get pod -l controller-uid=a72dcb14-e1dc-4c40-92f7-9ebd3afdf989 \
+                            --sort-by=.metadata.creationTimestamp -o jsonpath='{.items[-1:].status.containerStatuses}' |\
+                            jq '.[] | select( .name | contains("stylelint")) | .state.terminated.reason'`
+        
+          if [[ "${terminate_status}" == "Completed" ]]; then
             echo "     Job final state is 'complete', it ended with sucess"
             exit 0
           else
