@@ -215,7 +215,7 @@ runs:
           
           # kubectl -n ${namespace} wait --for=condition=complete --timeout=60s job/${jobName} && complete=true || true
         
-          terminate_status=`kubectl -n ci-kraken-26957 get pod -l controller-uid=a72dcb14-e1dc-4c40-92f7-9ebd3afdf989 \
+          terminate_status=`kubectl -n ci-kraken-26957 get pod -l controller-uid=${jobUid} \
                             --sort-by=.metadata.creationTimestamp -o jsonpath='{.items[-1:].status.containerStatuses}' |\
                             jq '.[] | select( .name | contains("stylelint")) | .state.terminated.reason'`
         
