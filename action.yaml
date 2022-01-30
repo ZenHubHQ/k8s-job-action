@@ -108,7 +108,7 @@ runs:
               containers:
                 - name: bash
                   image: bash:5.0.18
-                  command: [ "/bin/bash", "-c", "--" ]
+                  command: [ "/usr/local/bin/bash", "-c", "--" ]
                   args: [ "while true; do sleep 30; done;" ]
                   volumeMounts:
                     - mountPath: /job_outputs
