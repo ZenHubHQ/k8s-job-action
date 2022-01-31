@@ -222,7 +222,7 @@ runs:
           if [[ "${terminate_status}" == "Completed" ]]; then
             echo "     Job final state is 'complete', it ended with sucess"
             echo "     Extracting artifacts..."
-            kubectl cp ${{ inputs.namespace }}/${{ inputs.name }}:/job_outputs ./ -c extractor
+            kubectl cp ${{ inputs.namespace }}/"$(kubectl -n ${namespace} get pod -l controller-uid=${jobUid} --sort-by=.metadata.creationTimestamp -o jsonpath='{.items[-1:].metadata.name}')":/job_outputs ./ -c extractor
             exit 0
           else
             backoff_limit=$(kubectl -n ${namespace} get job/${jobName} -o jsonpath='{.spec.backoffLimit}')
