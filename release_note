@@ -1,1 +1,1 @@
-include problem matchers to the k8s job
+enable exporting coverage reports from job
