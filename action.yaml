@@ -109,7 +109,7 @@ runs:
                 - name: extractor
                   image: bash:5.0.18
                   command: [ "/usr/local/bin/bash", "-c", "--" ]
-                  args: [ "touch /tmp/runfile ;while [ ! -f /tmp/runfile ]; do sleep 30; done;" ]
+                  args: [ "touch /tmp/runfile; while [ -f /tmp/runfile ]; do sleep 30; done;" ]
                   volumeMounts:
                     - mountPath: /job_outputs
                       name: v1                  
