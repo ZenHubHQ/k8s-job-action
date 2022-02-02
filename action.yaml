@@ -109,7 +109,7 @@ runs:
                 - name: extractor
                   image: bash:5.0.18
                   command: [ "/usr/local/bin/bash", "-c", "--" ]
-                  args: [ "while true; do sleep 30; done;" ]
+                  args: [ "touch /tmp/runfile; while [ -f /tmp/runfile ]; do sleep 30; done;" ]
                   volumeMounts:
                     - mountPath: /job_outputs
                       name: v1                  
@@ -219,7 +219,10 @@ runs:
           if [[ "${terminate_status}" == "Completed" ]]; then
             echo "     Job final state is 'complete', it ended with sucess"
             echo "     Extracting artifacts..."
-            kubectl cp ${{ inputs.namespace }}/"$(kubectl -n ${namespace} get pod -l controller-uid=${jobUid} --sort-by=.metadata.creationTimestamp -o jsonpath='{.items[-1:].metadata.name}')":/job_outputs ./ -c extractor
+            pod_name=$(kubectl -n ${namespace} get pod -l controller-uid=${jobUid} --sort-by=.metadata.creationTimestamp -o jsonpath='{.items[-1:].metadata.name}')
+            kubectl cp ${namespace}/"${pod_name}":/job_outputs ./ -c extractor
+            
+            kubectl exec -n ${namespace}  ${pod_name} -c extractor -- sh -c 'rm -rf /tmp/runfile'
             exit 0
           else
             backoff_limit=$(kubectl -n ${namespace} get job/${jobName} -o jsonpath='{.spec.backoffLimit}')
