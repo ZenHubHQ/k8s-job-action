@@ -220,7 +220,7 @@ runs:
             echo "     Job final state is 'complete', it ended with sucess"
             echo "     Extracting artifacts..."
             pod_name=$(kubectl -n ${namespace} get pod -l controller-uid=${jobUid} --sort-by=.metadata.creationTimestamp -o jsonpath='{.items[-1:].metadata.name}')
-            kubectl cp ${namespace}/"${pod_name}":/job_outputs ./ -c extractor
+            kubectl23 cp ${namespace}/"${pod_name}":/job_outputs ./ -c extractor --retries=5
             
             kubectl exec -n ${namespace}  ${pod_name} -c extractor -- sh -c 'rm -rf /tmp/runfile'
             exit 0
