@@ -4,7 +4,7 @@ from kubernetes import client, config
 
 def main():
     job_name = os.environ["JOB_NAME"]
-    namespace = os.environ["INPUT_NAMESPACE"]
+    namespace = os.environ["NAMESPACE"]
     timeout_minute_start_container = os.environ["TIMEOUT_MINUTE_START_CONTAINER"]
     print(f"infuts are: \n jobname: {job_name} \n namespace: {namespace} \n timeout: {timeout_minute_start_container}")
 
