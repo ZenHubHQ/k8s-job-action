@@ -17,6 +17,7 @@ def main():
 # v1 = client.CoreV1Api()
 
 
+
 def init_k8s_configs():
     # config.load_kube_config()  # for local environment
     config.load_incluster_config()
@@ -25,6 +26,8 @@ def init_k8s_configs():
     v1 = client.CoreV1Api()
     return v1, batch_api
 
+def get_job_uid(batch_api, namespace, jobname):
+    print("megaID")
 
 if __name__ == "__main__":
     main()
