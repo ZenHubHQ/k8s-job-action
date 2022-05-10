@@ -16,8 +16,6 @@ def main():
     v1, batch_api = init_k8s_configs()
 
     job_uid = get_job_uid(batch_api, namespace, job_name)
-    my_output = f"Hello {job_name}"
-    print(f"::set-output name=myOutput::{my_output}")
 
     print("Keep trying to get logs until backoffLimit has been reached (or Job succeed)")
     while True:
@@ -42,6 +40,7 @@ def main():
 
         tail_pod_log(v1, pod.metadata.name, pod.metadata.namespace, job_name)
 
+        print("Job replica is done. checking Job status")
 
 def init_k8s_configs():
     # config.load_kube_config()  # for local environment
@@ -55,6 +54,7 @@ def init_k8s_configs():
 def get_job_uid(batch_api, namespace, jobname):
     try:
         job_uid = batch_api.read_namespaced_job(jobname, namespace)
+        print(f"job_uid is {job_uid}")
         return job_uid
     except ApiException as e:
         print("Exception when calling BatchV1Api->read_namespaced_job: %s\n" % e)
