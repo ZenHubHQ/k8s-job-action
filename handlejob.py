@@ -7,11 +7,11 @@ from kubernetes.client.rest import ApiException
 def main():
     job_name = os.environ["JOB_NAME"]
     namespace = os.environ["NAMESPACE"]
-    timeout_minute_start_container = os.environ["TIMEOUT_MINUTE_START_CONTAINER"]
+    timeout_minute_start_container = int(os.environ["TIMEOUT_MINUTE_START_CONTAINER"])
 
     print(f"infuts are: \n jobname: {job_name} \n namespace: {namespace} \n timeout: {timeout_minute_start_container}")
 
-    timeout = time.time() + 60*timeout_minute_start_container
+    timeout = time.time() + 60 * timeout_minute_start_container
 
     v1, batch_api = init_k8s_configs()
 
