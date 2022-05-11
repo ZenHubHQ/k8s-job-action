@@ -27,7 +27,7 @@ def main():
         pod = client.V1Pod()
         pod_is_ready = False
         # wait until pod switched from 'pending' to one of 'Running' 'Failed' 'Succeeded' states
-        while not pod_is_ready or time.time() < timeout:
+        while not pod_is_ready and time.time() < timeout:
             pod = get_pod_by_controller_uid(v1, namespace, job_uid)
             if get_pod_phase(pod) != "Pending":
                 print("pod is ready")
