@@ -53,7 +53,8 @@ def init_k8s_configs():
 
 def get_job_uid(batch_api, namespace, jobname):
     try:
-        job_uid = batch_api.read_namespaced_job(jobname, namespace)
+        job = batch_api.read_namespaced_job(jobname, namespace)
+        job_uid = job.metadata.labels["controller-uid"]
         print(f"job_uid is {job_uid}")
         return job_uid
     except ApiException as e:
