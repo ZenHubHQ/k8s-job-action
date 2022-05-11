@@ -13,7 +13,7 @@ def main():
     namespace = os.environ["NAMESPACE"]
     timeout_minute_start_container = int(os.environ["TIMEOUT_MINUTE_START_CONTAINER"])
 
-    print(f"infuts are: \n jobname: {job_name} \n namespace: {namespace} \n timeout: {timeout_minute_start_container}")
+    print(f"inputs are: \n jobname: {job_name} \n namespace: {namespace} \n timeout: {timeout_minute_start_container}")
 
     timeout = time.time() + 60 * timeout_minute_start_container
 
@@ -30,6 +30,7 @@ def main():
         while not pod_is_ready or time.time() < timeout:
             pod = get_pod_by_controller_uid(v1, namespace, job_uid)
             if get_pod_phase(pod) != "Pending":
+                print("pod is ready")
                 pod_is_ready = True
             time.sleep(10)
         if not pod_is_ready:
@@ -48,12 +49,12 @@ def main():
         terminate_status = get_pod_terminate_status(pod, job_name)
         pod_name = pod.metadata.name
 
-        if terminate_status is "Completed":
+        if terminate_status == "Completed":
             print("great! we are done")
             copy_output_from_extractor(namespace, pod_name)
             trigger_extractor_container_termination(v1, namespace, pod_name)
             sys.exit(0)
-        elif terminate_status is "Error":
+        elif terminate_status == "Error":
             # job is failed, so stopping extractor to bring pod to finalised state
             trigger_extractor_container_termination(v1, namespace, pod_name)
             time.sleep(10)
@@ -137,6 +138,7 @@ def yell_and_exit_1(namespace, job_name):
 
     print('::endgroup::')
     sys.exit(1)
+
 
 if __name__ == "__main__":
     main()
