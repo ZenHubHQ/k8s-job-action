@@ -109,7 +109,7 @@ def copy_output_from_extractor(namespace, pod_name):
     fallback to run with cli, since there is no good ready python client lib for this
     """
     copy_command = f'kubectl23 cp {namespace}/{pod_name}:/job_outputs ./ -c extractor --retries=5'
-    run(copy_command)
+    run(copy_command.split())
 
 def trigger_extractor_container_termination(v1, namespace, pod_name):
     exec_command = "rm -rf /tmp/runfile".split()
@@ -134,7 +134,7 @@ def yell_and_exit_1(namespace, job_name):
 
     res = run(f'kubectl -n {namespace} get job/{job_name} -o yaml'.split())
     res = run(f'kubectl -n {namespace} describe job/{job_name}'.split())
-    res = run(f'kubectl -n {namespace} describe pod -l "job-name={job_name}"')
+    res = run(f'kubectl -n {namespace} describe pod -l "job-name={job_name}"'.split())
 
     print('::endgroup::')
     sys.exit(1)
