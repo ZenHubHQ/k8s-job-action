@@ -55,13 +55,13 @@ def main():
             trigger_extractor_container_termination(v1, namespace, pod_name)
             sys.exit(0)
         elif terminate_status == "Error":
-            # job is failed, so stopping extractor to bring pod to finalised state
-            trigger_extractor_container_termination(v1, namespace, pod_name)
-            time.sleep(10)
             # check if we reached limit of failed attempts and now just give up:
             if backoff_limit_is_reached(batch_api, namespace, job_name):
                 print("Job has reach its backoffLimit and its final state is not 'complete', it ended with failures")
-
+                trigger_extractor_container_termination(v1, namespace, pod_name)
+                yell_and_exit_1(namespace, job_name)
+            # job is failed nut we still can try one more time, so stopping extractor to bring pod to finalised state
+            trigger_extractor_container_termination(v1, namespace, pod_name)
 
 
 def init_k8s_configs():
@@ -120,7 +120,8 @@ def trigger_extractor_container_termination(v1, namespace, pod_name):
                   container='extractor',
                   stderr=True, stdin=False,
                   stdout=True, tty=False)
-    print("Response: " + resp)
+    print("extractor container is terminated now")
+    time.sleep(6)
 
 def backoff_limit_is_reached(batch_api, namespace, job_name):
     job = batch_api.read_namespaced_job(job_name, namespace)
