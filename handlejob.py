@@ -58,6 +58,7 @@ def main():
             # check if we reached limit of failed attempts and now just give up:
             if backoff_limit_is_reached(batch_api, namespace, job_name):
                 print("Job has reach its backoffLimit and its final state is not 'complete', it ended with failures")
+                trigger_extractor_container_termination(v1, namespace, pod_name)
                 yell_and_exit_1(namespace, job_name)
             # job is failed nut we still can try one more time, so stopping extractor to bring pod to finalised state
             trigger_extractor_container_termination(v1, namespace, pod_name)
@@ -132,8 +133,8 @@ def backoff_limit_is_reached(batch_api, namespace, job_name):
     failed_pods   = job.status.failed
     if failed_pods is None:
         failed_pods = 0
-    print(f"Backoff limit reached? True/False: {failed_pods > backoff_limit}")
-    return failed_pods > backoff_limit
+    print(f"Backoff limit reached? True/False: {failed_pods >= backoff_limit}")
+    return failed_pods >= backoff_limit
 
 
 def yell_and_exit_1(namespace, job_name):
