@@ -13,7 +13,7 @@ def main():
     namespace = os.environ["NAMESPACE"]
     timeout_minute_start_container = int(os.environ["TIMEOUT_MINUTE_START_CONTAINER"])
 
-    print(f"inputs are: \n jobname: {job_name} \n namespace: {namespace} \n timeout: {timeout_minute_start_container}")
+    print(f"Inputs are: \n Jobname: {job_name} \n Namespace: {namespace} \n Timeout: {timeout_minute_start_container}")
 
     v1, batch_api = init_k8s_configs()
     job_uid = get_job_uid(batch_api, namespace, job_name)
@@ -24,20 +24,20 @@ def main():
         print("Wait for the most recently created Pod to not be 'Pending' so logs can be fetched without errors")
         pod = None
         pod_is_ready = False
-        # wait until pod switched from 'pending' to one of 'Running' 'Failed' 'Succeeded' states
+        # wait until pod switched from 'Pending' to one of 'Running' 'Failed' 'Succeeded' states
         while not pod_is_ready and time.time() < timeout:
             pod = get_pod_by_controller_uid(v1, namespace, job_uid)
             if get_pod_phase(pod) != "Pending":
-                print("pod is ready")
+                print("Pod is ready")
                 pod_is_ready = True
             time.sleep(10)
         if not pod_is_ready:
-            print("timed out to start pod")
+            print("Pod start timed out")
             yell_and_exit_1(namespace, job_name)
 
         print("""
         Job is either 'Running' 'Failed' 'Succeeded'"
-        Attempt to fetch logs
+        Attempting to fetch logs
         -----------------------------
         """)
 
@@ -48,18 +48,18 @@ def main():
         pod_name = pod.metadata.name
 
         if terminate_status == "Completed":
-            print("Job is successfully completed, fetching intermediate artifacts")
+            print("Job completed successfully, fetching intermediate artifacts")
             copy_output_from_extractor(namespace, pod_name)
             trigger_extractor_container_termination(v1, namespace, pod_name)
             sys.exit(0)
         elif terminate_status == "Error":
             # check if we reached limit of failed attempts and now just give up:
             if backoff_limit_is_reached(batch_api, namespace, job_name):
-                print("Job has reach its backoffLimit and its final state is not 'complete', it ended with failures")
+                print("Job has reached its backoff limit and its final state is not 'complete', it ended with failures")
                 trigger_extractor_container_termination(v1, namespace, pod_name)
                 yell_and_exit_1(namespace, job_name)
-            # job is failed nut we still can try one more time, so stopping extractor
-            # to bring pod to finalised state, and it will get restarted by job controller.
+            # job failed, but we still can try one more time. Stop extractor to
+            # bring pod to finalized state and it will get restarted by job controller.
             trigger_extractor_container_termination(v1, namespace, pod_name)
 
 
@@ -101,7 +101,7 @@ def tail_pod_log(v1, pod_name, namespace, container_name=""):
 
 def get_pod_terminate_status(v1, pod_name, namespace,container_matcher):
     pod = v1.read_namespaced_pod(pod_name, namespace)
-    print("checking pod terminations status...")
+    print("Checking pod terminations status...")
     container_statuses = pod.status.container_statuses
     for container in container_statuses:
         if container_matcher in container.name:
