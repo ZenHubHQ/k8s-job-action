@@ -98,6 +98,7 @@ def tail_pod_log(v1, pod_name, namespace, container_name=""):
 
 def get_pod_terminate_status(pod, container_matcher):
     print("checking pod terminations status")
+    print(f"inputs: {pod}, {container_matcher}")
     container_statuses = pod.status.container_statuses
     print(f"container statuses: \n {container_statuses}")
     for container in container_statuses:
