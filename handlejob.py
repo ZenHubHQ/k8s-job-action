@@ -24,7 +24,7 @@ def main():
     print("Keep trying to get logs until backoffLimit has been reached (or Job succeed)")
     while True:
         print("Wait for the most recently created Pod to not be 'Pending' so logs can be fetched without errors")
-        pod = client.V1Pod()
+        pod = None
         pod_is_ready = False
         # wait until pod switched from 'pending' to one of 'Running' 'Failed' 'Succeeded' states
         while not pod_is_ready and time.time() < timeout:
@@ -97,7 +97,9 @@ def tail_pod_log(v1, pod_name, namespace, container_name=""):
         print(line)
 
 def get_pod_terminate_status(pod, container_matcher):
+    print("checking pod terminations status")
     container_statuses = pod.status.container_statuses
+    print(f"container statuses: \n {container_statuses}")
     for container in container_statuses:
         if container_matcher in container.name:
             job_container_status = container.state.terminated.reason
