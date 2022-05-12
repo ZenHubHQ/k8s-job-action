@@ -43,10 +43,10 @@ def main():
           -----------------------------
         """)
 
-        tail_pod_log(v1, pod.metadata.name, pod.metadata.namespace, job_name)
+        tail_pod_log(v1, pod.metadata.name, namespace, job_name)
 
         print("Job replica is done. checking Job status")
-        terminate_status = get_pod_terminate_status(pod, job_name)
+        terminate_status = get_pod_terminate_status(v1, pod.metadata.name, namespace,  job_name)
         pod_name = pod.metadata.name
 
         if terminate_status == "Completed":
@@ -96,7 +96,8 @@ def tail_pod_log(v1, pod_name, namespace, container_name=""):
     for line in w.stream(v1.read_namespaced_pod_log, name=pod_name, namespace=namespace, container=container_name):
         print(line)
 
-def get_pod_terminate_status(pod, container_matcher):
+def get_pod_terminate_status(v1, pod_name, namespace,container_matcher):
+    pod = v1.read_namespaced_pod(pod_name, namespace)
     print("checking pod terminations status")
     print(f"inputs: {pod}, {container_matcher}")
     container_statuses = pod.status.container_statuses
