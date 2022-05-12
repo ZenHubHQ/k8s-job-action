@@ -35,7 +35,7 @@ def main():
             time.sleep(10)
         if not pod_is_ready:
             print("timed out to start pod")
-            yell_and_exit_1()
+            yell_and_exit_1(namespace, job_name)
 
         print("""
           Job is either 'Running' 'Failed' 'Succeeded'"
@@ -104,12 +104,14 @@ def get_pod_terminate_status(pod, container_matcher):
             print(f"job container status is: {job_container_status}")
             return job_container_status
 
+
 def copy_output_from_extractor(namespace, pod_name):
     """
     fallback to run with cli, since there is no good ready python client lib for this
     """
     copy_command = f'kubectl23 cp {namespace}/{pod_name}:/job_outputs ./ -c extractor --retries=5'
     run(copy_command.split())
+
 
 def trigger_extractor_container_termination(v1, namespace, pod_name):
     exec_command = "rm -rf /tmp/runfile".split()
@@ -123,11 +125,15 @@ def trigger_extractor_container_termination(v1, namespace, pod_name):
     print("extractor container is terminated now")
     time.sleep(6)
 
+
 def backoff_limit_is_reached(batch_api, namespace, job_name):
+    print("Checking if we reached job backoff limit...")
     job = batch_api.read_namespaced_job(job_name, namespace)
     backoff_limit = job.spec.backoff_limit
-    failed_pods = job.status.failed
+    failed_pods   = job.status.failed
+    print(f"Backoff limit reached? True/False: {failed_pods > backoff_limit}")
     return failed_pods > backoff_limit
+
 
 def yell_and_exit_1(namespace, job_name):
     print("\033[38;5;202mK8S Debug Information:\033[0m")
