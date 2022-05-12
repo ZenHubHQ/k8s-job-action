@@ -15,12 +15,10 @@ def main():
 
     print(f"inputs are: \n jobname: {job_name} \n namespace: {namespace} \n timeout: {timeout_minute_start_container}")
 
-    timeout = time.time() + 60 * timeout_minute_start_container
-
     v1, batch_api = init_k8s_configs()
-
     job_uid = get_job_uid(batch_api, namespace, job_name)
 
+    timeout = time.time() + 60 * timeout_minute_start_container
     print("Keep trying to get logs until backoffLimit has been reached (or Job succeed)")
     while True:
         print("Wait for the most recently created Pod to not be 'Pending' so logs can be fetched without errors")
@@ -38,9 +36,9 @@ def main():
             yell_and_exit_1(namespace, job_name)
 
         print("""
-          Job is either 'Running' 'Failed' 'Succeeded'"
-          Attempt to fetch logs
-          -----------------------------
+        Job is either 'Running' 'Failed' 'Succeeded'"
+        Attempt to fetch logs
+        -----------------------------
         """)
 
         tail_pod_log(v1, pod.metadata.name, namespace, job_name)
@@ -50,7 +48,7 @@ def main():
         pod_name = pod.metadata.name
 
         if terminate_status == "Completed":
-            print("great! we are done")
+            print("Job is successfully completed, fetching intermediate artifacts")
             copy_output_from_extractor(namespace, pod_name)
             trigger_extractor_container_termination(v1, namespace, pod_name)
             sys.exit(0)
@@ -60,7 +58,8 @@ def main():
                 print("Job has reach its backoffLimit and its final state is not 'complete', it ended with failures")
                 trigger_extractor_container_termination(v1, namespace, pod_name)
                 yell_and_exit_1(namespace, job_name)
-            # job is failed nut we still can try one more time, so stopping extractor to bring pod to finalised state
+            # job is failed nut we still can try one more time, so stopping extractor
+            # to bring pod to finalised state, and it will get restarted by job controller.
             trigger_extractor_container_termination(v1, namespace, pod_name)
 
 
@@ -82,19 +81,23 @@ def get_job_uid(batch_api, namespace, jobname):
     except ApiException as e:
         print("Exception when calling BatchV1Api->read_namespaced_job: %s\n" % e)
 
+
 def get_pod_by_controller_uid(v1, namespace, job_uid):
     pods = v1.list_namespaced_pod(namespace, label_selector=f'controller-uid={job_uid}')
     newest_pod = sorted(pods.items, key=lambda d: d.metadata.creation_timestamp)[-1]
 
     return newest_pod
 
+
 def get_pod_phase(pod):
     return pod.status.phase
+
 
 def tail_pod_log(v1, pod_name, namespace, container_name=""):
     w = watch.Watch()
     for line in w.stream(v1.read_namespaced_pod_log, name=pod_name, namespace=namespace, container=container_name):
         print(line)
+
 
 def get_pod_terminate_status(v1, pod_name, namespace,container_matcher):
     pod = v1.read_namespaced_pod(pod_name, namespace)
