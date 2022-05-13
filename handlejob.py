@@ -99,16 +99,21 @@ def tail_pod_log(v1, pod_name, namespace, container_name=""):
         print(line)
 
 
-def get_pod_terminate_status(v1, pod_name, namespace,container_matcher):
-    pod = v1.read_namespaced_pod(pod_name, namespace)
-    print("Checking pod terminations status...")
-    container_statuses = pod.status.container_statuses
-    for container in container_statuses:
-        if container_matcher in container.name:
-            job_container_status = container.state.terminated.reason
-            print(f"job container status is: {job_container_status}")
-            return job_container_status
-
+def get_pod_terminate_status(v1, pod_name, namespace, container_matcher):
+    terminated = None
+    while terminated is None:
+        pod = v1.read_namespaced_pod(pod_name, namespace)
+        print("checking pod terminations status...")
+        container_statuses = pod.status.container_statuses
+        for container in container_statuses:
+            if container_matcher in container.name:
+                terminated = container.state.terminated
+                if terminated is not None:
+                    job_container_status = terminated.reason
+                    print(f"job container status is: {job_container_status}")
+                    return job_container_status
+                print("Container not completely terminated, wait 5 sec and retry...")
+                time.sleep(5)
 
 def copy_output_from_extractor(namespace, pod_name):
     """
