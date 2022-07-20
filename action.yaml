@@ -153,11 +153,6 @@ runs:
         echo "     Creating Job ${{ inputs.name }}"
         kubectl apply -f job.yaml
 
-    - name: "install k8s library"
-      shell: bash
-      run: |
-        pip install kubernetes
-
     - name: "Handle Job"
       shell: bash
       run: | 
