@@ -156,7 +156,7 @@ runs:
     - name: "Handle Job"
       shell: bash
       run: | 
-        python -u ${{ github.action_path }}/handlejob.py
+        python3 -u ${{ github.action_path }}/handlejob.py
       env:
         JOB_NAME: ${{ inputs.name }}
         NAMESPACE: ${{ inputs.namespace }}
