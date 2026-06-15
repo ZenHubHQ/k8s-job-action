@@ -1,1 +1,1 @@
-move module install to base image. 
+fix log tailing: drop deprecated watch kwarg, use read_namespaced_pod_log follow stream.

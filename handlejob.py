@@ -1,7 +1,7 @@
 import os
 import sys
 import time
-from kubernetes import client, watch, config
+from kubernetes import client, config
 from kubernetes.client.rest import ApiException
 from subprocess import run
 
@@ -94,9 +94,15 @@ def get_pod_phase(pod):
 
 
 def tail_pod_log(v1, pod_name, namespace, container_name=""):
-    w = watch.Watch()
-    for line in w.stream(v1.read_namespaced_pod_log, name=pod_name, namespace=namespace, container=container_name):
-        print(line)
+    resp = v1.read_namespaced_pod_log(
+        name=pod_name,
+        namespace=namespace,
+        container=container_name,
+        follow=True,
+        _preload_content=False,
+    )
+    for chunk in resp.stream():
+        print(chunk.decode("utf-8", errors="replace"), end="")
 
 
 def get_pod_terminate_status(v1, pod_name, namespace, container_matcher):
